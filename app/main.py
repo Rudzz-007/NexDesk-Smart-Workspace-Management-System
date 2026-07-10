@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.auth import router as auth_router
+from app.api.bookings import router as bookings_router
 
 # Placeholder for ML service loading on Day 4
 try:
@@ -21,16 +22,16 @@ except ImportError:
 # 2. LIFESPAN MANAGEMENT: Executed exactly once when the server boots up
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🚀 Bootstrapping NexDesk Backend Services...")
+    print("[STARTUP] Bootstrapping NexDesk Backend Services...")
     
     if HAS_ML_SERVICE:
-        print("🧠 Loading serialized Machine Learning models into memory...")
+        print("[ML] Loading serialized Machine Learning models into memory...")
         predictor_service.load_models()
     else:
-        print("💡 ML Predictor Service files not created yet. Skipping model memory-mapping.")
+        print("[ML] Predictor Service files not created yet. Skipping model memory-mapping.")
         
     yield
-    print("🛑 Shutting down NexDesk Backend Services...")
+    print("[SHUTDOWN] Shutting down NexDesk Backend Services...")
 
 
 # 3. FASTAPI APP INITIALIZATION
@@ -54,6 +55,7 @@ app.add_middleware(
 
 # 5. INCLUDE ROUTERS
 app.include_router(auth_router)
+app.include_router(bookings_router)
 
 
 # 6. CORE APPLICATION HEALTH CHECK ROUTE
