@@ -11,7 +11,7 @@ class MLPredictorService:
     def load_models(self):
         """Simulates memory-mapping our trained scikit-learn pipeline artifacts."""
         self.is_loaded = True
-        print("🧠 [ML SERVICE] Serialized pricing and no-show weights mapped successfully.")
+        print("[ML SERVICE] Serialized pricing and no-show weights mapped successfully.")
 
     def predict_dynamic_price(self, start_time: datetime) -> float:
         """

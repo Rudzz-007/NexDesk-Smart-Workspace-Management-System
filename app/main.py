@@ -10,8 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.auth import router as auth_router
 from app.api.bookings import router as bookings_router
+from app.api.analytics import router as analytics_router  # Day 5 Import
 
-# Placeholder for ML service loading on Day 4
+# Lifespan verification check for ML service loading
 try:
     from app.services.ml_predictor import predictor_service
     HAS_ML_SERVICE = True
@@ -19,7 +20,7 @@ except ImportError:
     HAS_ML_SERVICE = False
 
 
-# 2. LIFESPAN MANAGEMENT: Executed exactly once when the server boots up
+# 2. LIFESPAN MANAGEMENT: Runs once during server boot/shutdown transitions
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("[STARTUP] Bootstrapping NexDesk Backend Services...")
@@ -28,10 +29,10 @@ async def lifespan(app: FastAPI):
         print("[ML] Loading serialized Machine Learning models into memory...")
         predictor_service.load_models()
     else:
-        print("[ML] Predictor Service files not created yet. Skipping model memory-mapping.")
+        print("[INFO] ML Predictor Service files not found. Skipping weight memory-mapping.")
         
     yield
-    print("[SHUTDOWN] Shutting down NexDesk Backend Services...")
+    print("[SHUTDOWN] NexDesk Backend Services stopped.")
 
 
 # 3. FASTAPI APP INITIALIZATION
@@ -46,19 +47,20 @@ app = FastAPI(
 # 4. CROSS-ORIGIN RESOURCE SHARING (CORS) MIDDLEWARE
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins during local dev; tighten in production
+    allow_origins=["*"],  # Open for development; restrict to trusted domain origins in production
     allow_credentials=True,
-    allow_methods=["*"],  # Allows GET, POST, PUT, DELETE, OPTIONS
+    allow_methods=["*"],  # Permits all standard verbs: GET, POST, PUT, DELETE, OPTIONS
     allow_headers=["*"],
 )
 
 
-# 5. INCLUDE ROUTERS
+# 5. MOUNT ROUTERS
 app.include_router(auth_router)
 app.include_router(bookings_router)
+app.include_router(analytics_router)  # Day 5 Route Mounting
 
 
-# 6. CORE APPLICATION HEALTH CHECK ROUTE
+# 6. APPLICATION HEALTH ENGINE
 @app.get("/", tags=["Health"])
 async def root():
     return {
