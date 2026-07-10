@@ -11,7 +11,8 @@ from app.db.session import get_db
 from app.models.booking import Booking
 from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingResponse
-from app.api.deps import get_current_user # Import our new dependency injection worker
+from app.api.deps import get_current_user
+from app.services.ml_predictor import predictor_service  # Import the ML instance
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
@@ -19,9 +20,9 @@ router = APIRouter(prefix="/bookings", tags=["Bookings"])
 async def create_booking(
     booking_in: BookingCreate, 
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user) # Require authentication state right here
+    current_user: User = Depends(get_current_user)
 ):
-    """Places a new workspace reservation linked to the active user session after collision checks."""
+    """Places a workspace reservation with dynamic pricing coefficients and no-show predictive analysis."""
     
     if booking_in.start_time >= booking_in.end_time:
         raise HTTPException(
@@ -29,7 +30,7 @@ async def create_booking(
             detail="Invalid time window: start_time must occur before end_time."
         )
 
-    # Check for overlapping bookings
+    # Collision boundary checking
     query = select(Booking).where(
         and_(
             Booking.desk_id == booking_in.desk_id,
@@ -48,17 +49,17 @@ async def create_booking(
             detail=f"Conflict detected: {booking_in.desk_id} is already reserved during this timeframe."
         )
 
-    # Fallback placeholders for Day 3 (Before ML pipelines go live on Day 4)
-    base_price = 150.0 
-    mock_no_show_prob = 0.05
+    # Compute live features using our ML service layer
+    live_price = predictor_service.predict_dynamic_price(booking_in.start_time)
+    live_noshow_prob = predictor_service.predict_noshow_probability(current_user.email, booking_in.start_time)
 
     new_booking = Booking(
-        user_id=current_user.id,  # Dynamically assign the ID of the logged-in user
+        user_id=current_user.id,
         desk_id=booking_in.desk_id,
         start_time=booking_in.start_time,
         end_time=booking_in.end_time,
-        final_price=base_price,
-        noshow_probability=mock_no_show_prob,
+        final_price=live_price,            # Injected ML metric
+        noshow_probability=live_noshow_prob, # Injected ML metric
         status="confirmed"
     )
 
