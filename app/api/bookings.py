@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 
@@ -8,12 +8,14 @@ from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingResponse
 from app.api.deps import get_current_user
 from app.services.ml_predictor import predictor_service
+from app.services.mailer import mailer_service
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
 @router.post("/", response_model=BookingResponse, status_code=status.HTTP_201_CREATED)
 async def create_booking(
-    booking_in: BookingCreate, 
+    booking_in: BookingCreate,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -61,4 +63,11 @@ async def create_booking(
     db.add(new_booking)
     await db.commit()
     await db.refresh(new_booking)
+    background_tasks.add_task(
+        mailer_service.send_booking_confirmation,
+        user_email=current_user.email,
+        booking_id=new_booking.id,
+        desk_id=new_booking.desk_id,
+        start_time=new_booking.start_time
+    )
     return new_booking
