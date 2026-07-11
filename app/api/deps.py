@@ -46,3 +46,17 @@ async def get_current_user(
         raise credentials_exception
         
     return user
+
+from typing import List
+
+class RoleChecker:
+    def __init__(self, allowed_roles: List[str]):
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role not in self.allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied: Your account privileges are insufficient for this operation."
+            )
+        return current_user

@@ -9,7 +9,7 @@ if BASE_DIR not in sys.path:
 
 from app.db.session import get_db
 from app.models.booking import Booking
-from app.api.deps import get_current_user
+from app.api.deps import get_db, get_current_user, RoleChecker
 from app.models.user import User
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/analytics", tags=["Analytics"])
 @router.get("/summary")
 async def get_workspace_summary(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(RoleChecker(["admin"]))
 ):
     """Computes administrative operations metrics for desk capacity utilization platforms."""
     # Total bookings counter
