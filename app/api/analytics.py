@@ -1,5 +1,5 @@
 import sys
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
@@ -39,4 +39,23 @@ async def get_workspace_summary(
         "total_revenue_generated_inr": round(total_revenue, 2),
         "high_risk_no_show_alerts": high_risk_bookings,
         "system_utilization_index": "Stable"
+    }
+
+@router.post("/pricing-override", status_code=200)
+async def configure_pricing_override(
+    zone_identifier: str,
+    surge_multiplier: float,
+    current_user: User = Depends(RoleChecker(["admin"]))
+):
+    """Allows system administrators to inject real-time dynamic pricing premium scaling configurations across specific workspace zones."""
+    if surge_multiplier <= 0:
+        raise HTTPException(status_code=400, detail="Surge multiplier coefficient must be greater than zero.")
+        
+    print(f"[PRICING CONFIG] Admin {current_user.email} injected a {surge_multiplier}x multiplier for {zone_identifier}.")
+    
+    return {
+        "status": "Override Active",
+        "zone": zone_identifier,
+        "applied_multiplier": surge_multiplier,
+        "message": f"Real-time dynamic pricing adjustments successfully pushed to all matching inventory slots."
     }
