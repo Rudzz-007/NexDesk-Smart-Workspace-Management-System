@@ -12,6 +12,8 @@ from app.api.auth import router as auth_router
 from app.api.bookings import router as bookings_router
 from app.api.analytics import router as analytics_router
 from app.api.checkin import router as checkin_router  # Advanced Feature Import
+from app.api.desks import router as desks_router
+from app.api.admin import router as admin_router
 
 # Lifespan verification check for ML service loading
 try:
@@ -60,6 +62,8 @@ app.include_router(auth_router)
 app.include_router(bookings_router)
 app.include_router(analytics_router)
 app.include_router(checkin_router)  # Advanced Feature Routing Mount
+app.include_router(desks_router)
+app.include_router(admin_router)
 
 
 # APPLICATION HEALTH ENGINE
