@@ -13,9 +13,9 @@ from app.models.user import User
 router = APIRouter(prefix="/checkin", tags=["Check-In Engine"])
 
 async def monitor_no_show_lifespan(booking_id: int, db_factory):
-    """Asynchronous background worker that waits 30 seconds to verify employee presence."""
-    # Using 30 seconds for local demonstration testing instead of a full 15 minutes
-    await asyncio.sleep(30)
+    """Asynchronous background worker that waits to verify employee presence."""
+    # Using 28 seconds so that when the 30-second frontend countdown reaches 0s, the slot is already auto-released
+    await asyncio.sleep(28)
     
     # Provision an isolated session outside the lifespan scope of the HTTP request thread
     async with db_factory() as db:
@@ -49,16 +49,17 @@ async def generate_checkin_token(
             detail=f"Cannot provision check-in token for status: {booking.status}"
         )
 
-    # Generate an ephemeral secure signature identifier
-    secure_token = f"NEXDESK-VERIFY-{uuid.uuid4().hex[:12].upper()}"
+    # Generate an ephemeral secure signature identifier with embedded creation timestamp
+    now_ts = int(datetime.now(timezone.utc).timestamp())
+    secure_token = f"NEXDESK-VERIFY-{now_ts}-{uuid.uuid4().hex[:6].upper()}"
     booking.check_in_token = secure_token
     
     await db.commit()
     await db.refresh(booking)
 
-    # Offload the execution loop to the backend worker thread pool
+    # Offload the execution loop immediately to asyncio event loop
     from app.db.session import AsyncSessionLocal
-    background_tasks.add_task(monitor_no_show_lifespan, booking.id, AsyncSessionLocal)
+    asyncio.create_task(monitor_no_show_lifespan(booking.id, AsyncSessionLocal))
 
     return {
         "message": "Check-in QR payload generated successfully.",
@@ -85,7 +86,19 @@ async def verify_physical_presence(
             status_code=status.HTTP_410_GONE, 
             detail="Verification window expired. Slot already auto-released by system."
         )
-        
+
+    # Enforce strict 30-second verification window check
+    parts = token_string.split("-")
+    if len(parts) >= 4 and parts[2].isdigit():
+        token_ts = int(parts[2])
+        if int(datetime.now(timezone.utc).timestamp()) - token_ts > 30:
+            booking.status = "no_show"
+            await db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_410_GONE,
+                detail="Verification window expired. Slot already auto-released by system."
+            )
+
     if booking.status != "confirmed":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Desk already checked-in or modified.")
 

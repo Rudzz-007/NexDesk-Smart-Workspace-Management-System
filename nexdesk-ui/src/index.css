@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   NEXDESK DESIGN SYSTEM — Tailwind v4 CSS-first theme
+   ═══════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Fonts ─────────────────────────────────────────────── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Blue primary scale ─────────────────────────────────── */
+  --color-primary-50:  #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* ── Neutral / slate scale ──────────────────────────────── */
+  --color-neutral-50:  #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+
+  /* ── Semantic status colors ─────────────────────────────── */
+  --color-success-50:  #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  --color-warning-50:  #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  --color-error-50:  #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+
+  /* ── Spacing — 8px base grid ────────────────────────────── */
+  --spacing-px:  1px;
+  --spacing-0:   0px;
+  --spacing-1:   4px;    /* 0.5 × 8 */
+  --spacing-2:   8px;    /* 1 × 8   */
+  --spacing-3:   12px;
+  --spacing-4:   16px;   /* 2 × 8   */
+  --spacing-5:   20px;
+  --spacing-6:   24px;   /* 3 × 8   */
+  --spacing-8:   32px;   /* 4 × 8   */
+  --spacing-10:  40px;
+  --spacing-12:  48px;   /* 6 × 8   */
+  --spacing-14:  56px;
+  --spacing-16:  64px;   /* 8 × 8   */
+  --spacing-20:  80px;
+  --spacing-24:  96px;
+  --spacing-32:  128px;
+  --spacing-40:  160px;
+  --spacing-48:  192px;
+  --spacing-64:  256px;
+
+  /* ── Border radius ──────────────────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;   /* main card/button radius */
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
+  --radius-full: 9999px;
+
+  /* ── Type scale ─────────────────────────────────────────── */
+  --text-xs:   0.75rem;    /* 12px — captions */
+  --text-sm:   0.875rem;   /* 14px — captions/labels */
+  --text-base: 1rem;       /* 16px — body */
+  --text-lg:   1.125rem;   /* 18px — card titles */
+  --text-xl:   1.25rem;    /* 20px — card titles large */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  2rem;       /* 32px — section H2 */
+  --text-4xl:  2.75rem;    /* 44px — hero H1 */
+  --text-5xl:  3.5rem;     /* 56px — hero H1 large */
+
+  /* ── Line heights ───────────────────────────────────────── */
+  --leading-tight:  1.25;
+  --leading-snug:   1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed:1.625;
+
+  /* ── Font weights ───────────────────────────────────────── */
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* ── Shadows ────────────────────────────────────────────── */
+  --shadow-xs:  0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm:  0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.07);
+  --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+
+  /* ── Max content width ──────────────────────────────────── */
+  --breakpoint-sm:  640px;
+  --breakpoint-md:  768px;
+  --breakpoint-lg:  1024px;
+  --breakpoint-xl:  1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* ── Global base styles ─────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--color-neutral-900);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    line-height: var(--leading-normal);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-tight);
+    color: var(--color-neutral-900);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, select, textarea, button {
+    font-family: inherit;
+  }
+
+  /* ── Accessible Keyboard Focus States (WCAG AA 2.4.7 / 2.4.11) ── */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--color-primary-600) !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* ── Respect prefers-reduced-motion (WCAG AAA 2.3.3) ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Loading Skeleton Shimmer Utility ───────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@layer utilities {
+  .skeleton {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton {
+      animation: none;
+      background: #e2e8f0;
+    }
+  }
+
+  .container-nd {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  @media (max-width: 640px) {
+    .container-nd {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+}
+
