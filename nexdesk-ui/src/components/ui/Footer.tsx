@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Building2, MessageCircle, Briefcase, GitFork, Mail, Phone } from 'lucide-react';
 
 const FOOTER_LINKS = {
@@ -8,16 +9,17 @@ const FOOTER_LINKS = {
     { label: 'Press',       href: '#' },
   ],
   Cities: [
-    { label: 'Bengaluru',   href: '#' },
-    { label: 'Mumbai',      href: '#' },
-    { label: 'Delhi NCR',   href: '#' },
-    { label: 'Hyderabad',   href: '#' },
-    { label: 'Pune',        href: '#' },
-    { label: 'Chennai',     href: '#' },
+    { label: 'All Cities',  href: '/cities' },
+    { label: 'Bangalore',   href: '/browse?city=Bangalore' },
+    { label: 'Mumbai',      href: '/browse?city=Mumbai' },
+    { label: 'Delhi NCR',   href: '/browse?city=Delhi%20NCR' },
+    { label: 'Hyderabad',   href: '/browse?city=Hyderabad' },
+    { label: 'Pune',        href: '/browse?city=Pune' },
+    { label: 'Chennai',     href: '/browse?city=Chennai' },
   ],
   Resources: [
-    { label: 'How it Works',   href: '#' },
-    { label: 'Pricing Guide',  href: '#' },
+    { label: 'How it Works',   href: '/how-it-works' },
+    { label: 'Pricing Guide',  href: '/pricing' },
     { label: 'API Docs',       href: '#' },
     // Future: { label: 'Meeting Room Guide', href: '#' },
   ],
@@ -89,16 +91,23 @@ export function Footer() {
                 {group}
               </h4>
               <ul className="flex flex-col gap-2" role="list">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-[#64748b] hover:text-[#3b82f6] transition-colors duration-150"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
+                {links.map((link) => {
+                  const isInternal = link.href.startsWith('/');
+                  const classes = "text-sm text-[#64748b] hover:text-[#3b82f6] transition-colors duration-150";
+                  return (
+                    <li key={link.label}>
+                      {isInternal ? (
+                        <Link to={link.href} className={classes}>
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <a href={link.href} className={classes}>
+                          {link.label}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

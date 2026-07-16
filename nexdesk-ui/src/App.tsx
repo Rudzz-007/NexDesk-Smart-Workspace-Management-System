@@ -19,6 +19,9 @@ import DashboardProfilePage  from '@/pages/DashboardProfilePage';
 import AdminPage             from '@/pages/AdminPage';
 import NotFoundPage          from '@/pages/NotFoundPage';
 import ComponentsDemo        from '@/pages/ComponentsDemo';  // moved to /demo
+import HowItWorksPage        from '@/pages/HowItWorksPage';
+import PricingPage           from '@/pages/PricingPage';
+import CitiesPage            from '@/pages/CitiesPage';
 
 export default function App() {
   return (
@@ -51,6 +54,9 @@ export default function App() {
             <Route index             element={<HomePage />} />
             <Route path="/browse"    element={<BrowsePage />} />
             <Route path="/space/:id" element={<SpaceDetailPage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/cities" element={<CitiesPage />} />
 
             {/* Authenticated — admin only */}
             <Route

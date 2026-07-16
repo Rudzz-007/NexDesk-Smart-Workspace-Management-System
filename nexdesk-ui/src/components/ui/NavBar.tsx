@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Building2 } from 'lucide-react';
 import { Button } from './Button';
 
@@ -14,12 +15,10 @@ interface NavBarProps {
 }
 
 const NAV_LINKS = [
-  { label: 'Hot Desks', href: '#desks', active: true },
-  // Future: { label: 'Meeting Rooms', href: '#meeting-rooms' },
-  // Future: { label: 'Equipment',     href: '#equipment' },
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'Pricing',      href: '#pricing' },
-  { label: 'Cities',       href: '#cities' },
+  { label: 'Hot Desks', href: '/#desks' },
+  { label: 'How it works', href: '/how-it-works' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Cities', href: '/cities' },
 ];
 
 export function NavBar({
@@ -34,37 +33,64 @@ export function NavBar({
 }: NavBarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const getLinkUrl = (href: string) => {
+    if (href.startsWith('/#') && location.pathname === '/') {
+      return href.substring(1); // just return the hash part e.g. '#desks'
+    }
+    return href;
+  };
+
+  const isLinkActive = (href: string) => {
+    if (href.startsWith('/') && !href.includes('#')) {
+      return location.pathname === href;
+    }
+    if (href === '/#desks') {
+      return location.pathname === '/' && (location.hash === '#desks' || !location.hash);
+    }
+    return location.pathname === '/' && location.hash === href.substring(1);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#e2e8f0] shadow-xs">
       <nav className="container-nd flex items-center justify-between h-16" aria-label="Main navigation">
         {/* ── Logo ──────────────────────────────────────────── */}
-        <a href="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="NexDesk home">
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0 group" aria-label="NexDesk home">
           <div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center shadow-sm group-hover:bg-[#2563eb] transition-colors duration-150">
             <Building2 size={18} className="text-white" />
           </div>
           <span className="text-xl font-bold text-[#0f172a] tracking-tight">
             Nex<span className="text-[#3b82f6]">Desk</span>
           </span>
-        </a>
+        </Link>
 
         {/* ── Desktop nav links ────────────────────────────── */}
         <ul className="hidden md:flex items-center gap-1" role="list">
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <a
-                href={link.href}
-                className={[
-                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150',
-                  link.active
-                    ? 'text-[#3b82f6] bg-[#eff6ff]'
-                    : 'text-[#475569] hover:text-[#0f172a] hover:bg-[#f8fafc]',
-                ].join(' ')}
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = isLinkActive(link.href);
+            const isSpaRoute = link.href.startsWith('/') && !link.href.includes('#');
+            const classes = [
+              'px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150',
+              isActive
+                ? 'text-[#3b82f6] bg-[#eff6ff]'
+                : 'text-[#475569] hover:text-[#0f172a] hover:bg-[#f8fafc]',
+            ].join(' ');
+
+            return (
+              <li key={link.label}>
+                {isSpaRoute ? (
+                  <Link to={link.href} className={classes}>
+                    {link.label}
+                  </Link>
+                ) : (
+                  <a href={getLinkUrl(link.href)} className={classes}>
+                    {link.label}
+                  </a>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         {/* ── Desktop CTA ───────────────────────────────────── */}
@@ -145,17 +171,32 @@ export function NavBar({
       {mobileOpen && (
         <div className="md:hidden border-t border-[#e2e8f0] bg-white px-4 pb-4 pt-2">
           <ul className="flex flex-col gap-1" role="list">
-            {NAV_LINKS.map((link) => (
-              <li key={link.label}>
-                <a
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-2.5 rounded-lg text-sm font-medium text-[#475569] hover:text-[#0f172a] hover:bg-[#f8fafc]"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const isSpaRoute = link.href.startsWith('/') && !link.href.includes('#');
+              const classes = "block px-3 py-2.5 rounded-lg text-sm font-medium text-[#475569] hover:text-[#0f172a] hover:bg-[#f8fafc]";
+
+              return (
+                <li key={link.label}>
+                  {isSpaRoute ? (
+                    <Link
+                      to={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={classes}
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={getLinkUrl(link.href)}
+                      onClick={() => setMobileOpen(false)}
+                      className={classes}
+                    >
+                      {link.label}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-[#f1f5f9]">
             {isLoggedIn ? (

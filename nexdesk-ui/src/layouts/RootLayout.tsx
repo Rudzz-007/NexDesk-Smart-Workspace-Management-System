@@ -2,6 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { NavBar } from '@/components/ui/NavBar';
 import { Footer } from '@/components/ui/Footer';
 import { useAuth } from '@/context/AuthContext';
+import ChatAssistant from '@/components/ui/ChatAssistant';
 
 /**
  * RootLayout — wraps every page EXCEPT /login and /signup.
@@ -31,6 +32,7 @@ export function RootLayout() {
       </main>
 
       <Footer />
+      <ChatAssistant />
     </div>
   );
 }
