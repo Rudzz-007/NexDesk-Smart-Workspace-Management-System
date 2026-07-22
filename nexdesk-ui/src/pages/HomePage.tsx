@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { SpaceCard, type DeskData } from '@/components/ui/SpaceCard';
 import { Badge } from '@/components/ui/Badge';
+import { CityLandmarkIcon } from '@/components/ui/CityLandmarkIcon';
 
 /* ─── pure-data constants (no JSX at module level) ───────────────── */
 const CITIES = [
@@ -16,8 +17,8 @@ const CITIES = [
 ];
 
 const TRUST_STATS = [
-  { key: 'desks',    value: '500+', label: 'Verified Desks' },
-  { key: 'cities',   value: '50+',  label: 'Cities' },
+  { key: 'desks',    value: '50+',  label: 'Verified Desks' },
+  { key: 'cities',   value: '10+',  label: 'Cities' },
   { key: 'pricing',  value: '100%', label: 'Transparent Pricing' },
   { key: 'booking',  value: '<60s', label: 'Instant Booking' },
 ];
@@ -110,7 +111,7 @@ export default function HomePage() {
             <div className="flex-1 max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#dbeafe] border border-[#bfdbfe] text-sm text-[#1d4ed8] font-medium mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#3b82f6] animate-pulse" />
-                India's smartest workspace platform
+                Smartest Workspace Platform
               </div>
 
               <h1 className="text-5xl lg:text-[3.5rem] font-bold text-[#0f172a] leading-[1.1] mb-5">
@@ -120,7 +121,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-lg text-[#64748b] leading-relaxed mb-10 max-w-md">
-                Flexible hot-desk bookings across 500+ verified coworking spaces in 50+ cities.
+                Flexible hot-desk bookings across 50+ verified coworking spaces in 10+ cities.
                 Dynamic pricing, instant confirmation, QR check-in.
               </p>
 
@@ -164,10 +165,6 @@ export default function HomePage() {
                   </Button>
                 </div>
               </div>
-
-              <p className="text-xs text-[#94a3b8] mt-3">
-                No account needed to browse · Free to sign up
-              </p>
             </div>
 
             {/* right image */}
@@ -374,7 +371,7 @@ export default function HomePage() {
                   'transition-all duration-150 shadow-xs cursor-pointer',
                 ].join(' ')}
               >
-                <MapPin size={13} className="opacity-60" />
+                <CityLandmarkIcon city={c} className="w-4 h-4 opacity-75" />
                 {c}
               </a>
             ))}

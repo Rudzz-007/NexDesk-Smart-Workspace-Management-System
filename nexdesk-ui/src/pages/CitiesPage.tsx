@@ -4,6 +4,7 @@ import { MapPin, Building2, ArrowRight, Sparkles, ShieldCheck } from 'lucide-rea
 import { Badge } from '@/components/ui/Badge';
 import { type DeskData } from '@/components/ui/SpaceCard';
 import { useAuth } from '@/context/AuthContext';
+import { CityLandmarkIcon } from '@/components/ui/CityLandmarkIcon';
 
 interface CityInfo {
   name: string;
@@ -218,7 +219,10 @@ export default function CitiesPage() {
 
                     <div className="absolute bottom-3.5 left-3.5 right-3.5 z-10 text-white">
                       <h3 className="text-xl font-black tracking-tight flex items-center justify-between">
-                        <span>{city.name}</span>
+                        <span className="flex items-center gap-2">
+                          <CityLandmarkIcon city={city.name} className="w-5 h-5 text-white/90 shrink-0" />
+                          {city.name}
+                        </span>
                         <ArrowRight size={18} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#3b82f6] bg-white rounded-full p-0.5" />
                       </h3>
                       <p className="text-xs text-slate-200 font-medium mt-0.5 truncate">
