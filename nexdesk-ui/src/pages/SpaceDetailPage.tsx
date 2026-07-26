@@ -137,7 +137,8 @@ export default function SpaceDetailPage() {
 
   /* ── Fetch desks & resolve current desk ── */
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Wrap in setTimeout to ensure React Router doesn't override the scroll
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 10);
     
     let mounted = true;
     setLoadingDesk(true);
