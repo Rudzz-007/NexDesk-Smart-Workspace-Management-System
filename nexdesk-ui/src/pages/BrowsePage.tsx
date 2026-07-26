@@ -535,7 +535,7 @@ export default function BrowsePage() {
             ) : (
               /* Desks Grid */
               <div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 animate-fade-in">
                   {displayedDesks.map((desk, i) => (
                     <SpaceCard
                       key={desk.id}

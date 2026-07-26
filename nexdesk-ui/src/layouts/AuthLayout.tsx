@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Building2 } from 'lucide-react';
 
 /**
@@ -7,13 +7,15 @@ import { Building2 } from 'lucide-react';
  * Includes a minimal logo link back to the homepage.
  */
 export function AuthLayout() {
+  const location = useLocation();
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       {/* Minimal header — just the logo, no nav */}
       <header className="flex-shrink-0 px-6 py-5">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 group"
+          className="inline-flex items-center gap-2 group hover-lift"
           aria-label="NexDesk — back to home"
         >
           <div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center shadow-sm group-hover:bg-[#2563eb] transition-colors duration-150">
@@ -26,7 +28,7 @@ export function AuthLayout() {
       </header>
 
       {/* Auth card area — vertically + horizontally centered */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8">
+      <div key={location.pathname} className="flex-1 flex items-center justify-center px-4 py-8 page-transition">
         <div className="w-full max-w-md">
           <Outlet />
         </div>

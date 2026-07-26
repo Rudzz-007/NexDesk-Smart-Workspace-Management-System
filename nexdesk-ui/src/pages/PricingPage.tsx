@@ -14,6 +14,7 @@ import {
   Sparkles,
   Info
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface FAQItem {
   question: string;
@@ -36,6 +37,7 @@ const FAQ_ITEMS: FAQItem[] = [
 ];
 
 export default function PricingPage() {
+  const { user } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const toggleFaq = (index: number) => {
@@ -346,12 +348,21 @@ export default function PricingPage() {
               Browse Hot Desks
               <ArrowRight size={15} />
             </Link>
-            <Link
-              to="/signup"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#2563eb]/20 border border-white/20 text-white text-sm font-bold hover:bg-white/10 transition-colors"
-            >
-              Create Account
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#2563eb]/20 border border-white/20 text-white text-sm font-bold hover:bg-white/10 transition-colors"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#2563eb]/20 border border-white/20 text-white text-sm font-bold hover:bg-white/10 transition-colors"
+              >
+                Create Account
+              </Link>
+            )}
           </div>
         </div>
       </section>

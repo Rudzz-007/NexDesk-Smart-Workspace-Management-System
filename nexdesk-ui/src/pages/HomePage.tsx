@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { SpaceCard, type DeskData } from '@/components/ui/SpaceCard';
 import { Badge } from '@/components/ui/Badge';
 import { CityLandmarkIcon } from '@/components/ui/CityLandmarkIcon';
+import { useAuth } from '@/context/AuthContext';
 
 /* ─── pure-data constants (no JSX at module level) ───────────────── */
 const CITIES = [
@@ -59,6 +60,7 @@ const DESK_IMAGES = [
 ══════════════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [city, setCity]     = useState('');
   const [date, setDate]     = useState('');
   const [desks, setDesks]   = useState<DeskData[]>([]);
@@ -126,40 +128,40 @@ export default function HomePage() {
               </p>
 
               {/* ── search bar ── */}
-              <div className="flex flex-col sm:flex-row gap-0 bg-white rounded-2xl shadow-lg border border-[#e2e8f0] overflow-hidden">
+              <div className="flex flex-col sm:flex-row gap-2 bg-white rounded-xl shadow-sm border border-[#e2e8f0] p-1.5">
                 {/* city */}
-                <div className="flex items-center gap-2 flex-1 px-4 py-3 border-b sm:border-b-0 sm:border-r border-[#e2e8f0]">
-                  <MapPin size={16} className="text-[#3b82f6] flex-shrink-0" />
+                <div className="flex items-center gap-2 flex-1 px-3 py-2 border-b sm:border-b-0 sm:border-r border-[#e2e8f0]">
+                  <MapPin size={18} className="text-[#3b82f6] flex-shrink-0" />
                   <select
                     id="hero-city"
                     value={city}
                     onChange={e => setCity(e.target.value)}
-                    className="w-full bg-transparent text-sm text-[#334155] outline-none cursor-pointer"
+                    className="w-full bg-transparent text-sm text-[#0f172a] font-medium outline-none cursor-pointer appearance-none"
                   >
                     <option value="">Select city…</option>
                     {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 {/* date */}
-                <div className="flex items-center gap-2 flex-1 px-4 py-3 border-b sm:border-b-0 sm:border-r border-[#e2e8f0]">
-                  <Calendar size={16} className="text-[#3b82f6] flex-shrink-0" />
+                <div className="flex items-center gap-2 flex-1 px-3 py-2">
+                  <Calendar size={18} className="text-[#3b82f6] flex-shrink-0" />
                   <input
                     id="hero-date"
                     type="date"
                     value={date}
                     onChange={e => setDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full bg-transparent text-sm text-[#334155] outline-none cursor-pointer"
+                    className="w-full bg-transparent text-sm text-[#0f172a] font-medium outline-none cursor-pointer"
                   />
                 </div>
                 {/* button */}
-                <div className="px-3 py-2.5 flex-shrink-0">
+                <div className="flex-shrink-0">
                   <Button
                     id="hero-search-btn"
                     size="lg"
-                    leftIcon={<Search size={16} />}
+                    leftIcon={<Search size={18} />}
                     onClick={handleSearch}
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto h-full"
                   >
                     Search
                   </Button>
@@ -260,7 +262,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : desks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in">
               {desks.map((desk, i) => (
                 <SpaceCard
                   key={desk.id}
@@ -274,7 +276,7 @@ export default function HomePage() {
             </div>
           ) : (
             /* empty / API offline fallback */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in">
               {[
                 { id:1, desk_id:'DESK-BLR-01', location:'Koramangala, Bangalore', base_price:149, amenities:'WiFi,Monitor,Coffee', is_active:'available' as const },
                 { id:2, desk_id:'DESK-MUM-03', location:'BKC, Mumbai',            base_price:199, amenities:'WiFi,Standing Desk,Locker', is_active:'available' as const },
@@ -365,13 +367,13 @@ export default function HomePage() {
                 href={`/browse?city=${encodeURIComponent(c)}`}
                 onClick={e => { e.preventDefault(); navigate(`/browse?city=${encodeURIComponent(c)}`); }}
                 className={[
-                  'inline-flex items-center gap-2 px-5 py-2.5 rounded-full',
-                  'bg-white border border-[#e2e8f0] text-[#334155] text-sm font-medium',
+                  'inline-flex items-center gap-2 px-5 py-2.5 rounded-xl',
+                  'bg-white border border-[#e2e8f0] text-[#0f172a] text-sm font-semibold',
                   'hover:border-[#3b82f6] hover:text-[#3b82f6] hover:bg-[#eff6ff]',
-                  'transition-all duration-150 shadow-xs cursor-pointer',
+                  'transition-all duration-150 shadow-sm cursor-pointer hover-lift',
                 ].join(' ')}
               >
-                <CityLandmarkIcon city={c} className="w-4 h-4 opacity-75" />
+                <CityLandmarkIcon city={c} className="w-5 h-5 text-[#3b82f6]" />
                 {c}
               </a>
             ))}
@@ -444,16 +446,29 @@ export default function HomePage() {
             >
               Browse Desks Now
             </Button>
-            <Button
-              id="cta-signup-btn"
-              size="lg"
-              variant="secondary"
-              className="!bg-transparent !text-white !border-white hover:!bg-white/10"
-              rightIcon={<ArrowRight size={16} />}
-              onClick={() => navigate('/signup')}
-            >
-              Create Free Account
-            </Button>
+            {user ? (
+              <Button
+                id="cta-dashboard-btn"
+                size="lg"
+                variant="secondary"
+                className="!bg-transparent !text-white !border-white hover:!bg-white/10"
+                rightIcon={<ArrowRight size={16} />}
+                onClick={() => navigate('/dashboard')}
+              >
+                Go to Dashboard
+              </Button>
+            ) : (
+              <Button
+                id="cta-signup-btn"
+                size="lg"
+                variant="secondary"
+                className="!bg-transparent !text-white !border-white hover:!bg-white/10"
+                rightIcon={<ArrowRight size={16} />}
+                onClick={() => navigate('/signup')}
+              >
+                Create Free Account
+              </Button>
+            )}
           </div>
           <p className="text-[#93c5fd] text-xs mt-6">
             No credit card required · Cancel anytime

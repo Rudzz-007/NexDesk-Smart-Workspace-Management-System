@@ -418,34 +418,49 @@ export default function SpaceDetailPage() {
                 </div>
               </div>
 
-              {/* Amenities tags */}
-              <div className="mt-6 pt-6 border-t border-[#f1f5f9]">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-[#64748b] mb-3">
-                  Included Amenities
-                </h3>
-                <div className="flex flex-wrap gap-2.5">
-                  {amenitiesList.map(item => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] text-sm font-medium text-[#334155]"
-                    >
+              {/* ── Removed inline amenities here; moved to separate sections below ── */}
+            </div>
+
+            {/* What's included (Amenities) */}
+            <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-xs">
+              <h3 className="text-lg font-bold text-[#0f172a] mb-4">What's included</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-5 gap-x-4">
+                {amenitiesList.map(item => (
+                  <div key={item} className="flex items-center gap-3 text-[#334155]">
+                    <div className="w-10 h-10 rounded-full bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center flex-shrink-0 text-[#3b82f6]">
                       {getAmenityIcon(item)}
-                      <span>{item}</span>
-                    </span>
-                  ))}
-                </div>
+                    </div>
+                    <span className="text-sm font-medium">{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Workspace Description */}
-            <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-xs">
-              <h3 className="text-lg font-bold text-[#0f172a] mb-3">About this Workspace</h3>
-              <p className="text-[#475569] text-sm leading-relaxed space-y-3">
-                Located in the heart of {desk.location}, <strong className="text-[#0f172a]">{desk.desk_id}</strong> is a high-productivity hot desk designed for focused work and seamless professional collaboration. Equipped with ergonomic seating, ample natural light, and high-speed enterprise Wi-Fi.
-              </p>
-              <p className="text-[#475569] text-sm leading-relaxed mt-3">
-                Every reservation features NexDesk's automated check-in engine and ML dynamic pricing. Simply scan your QR token upon arrival to verify physical presence.
-              </p>
+            {/* About this location & Data Notice */}
+            <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-xs space-y-6">
+              <div>
+                <h3 className="text-lg font-bold text-[#0f172a] mb-3">About this location</h3>
+                <p className="text-[#475569] text-sm mb-1">
+                  <strong>Full Address / Zone:</strong> {desk.location}
+                </p>
+                <p className="text-[#475569] text-sm">
+                  <strong>City:</strong> {desk.location.split(',').pop()?.trim() || 'Not specified'}
+                </p>
+              </div>
+
+              {/* Data limitations notice */}
+              <div className="p-4 bg-[#eff6ff] rounded-xl border border-[#bfdbfe]">
+                <h4 className="text-sm font-bold text-[#1d4ed8] mb-2 flex items-center gap-2">
+                  <AlertCircle size={16} /> Backend Data Limitations
+                </h4>
+                <p className="text-[#1e40af] text-sm leading-relaxed mb-3">
+                  This page currently reflects the exact fields available in the backend database. We are purposefully not rendering fabricated "placeholder" descriptions or transit info.
+                </p>
+                <ul className="text-[#1e3a8a] text-xs space-y-1.5 list-disc list-inside">
+                  <li><strong>Fields present in DB:</strong> id, desk_id, location, base_price, amenities, is_active.</li>
+                  <li><strong>Fields missing in DB:</strong> description, capacity, floor info, nearby transit, operating hours.</li>
+                </ul>
+              </div>
             </div>
 
             {/* ════════════════════════════════════════════════════════════════

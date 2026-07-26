@@ -23,9 +23,12 @@ import HowItWorksPage        from '@/pages/HowItWorksPage';
 import PricingPage           from '@/pages/PricingPage';
 import CitiesPage            from '@/pages/CitiesPage';
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 export default function App() {
   return (
-    <AuthProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
+      <AuthProvider>
       <BrowserRouter>
         <Routes>
 
@@ -77,6 +80,7 @@ export default function App() {
 
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }

@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     MODEL_DIR: str = os.path.join(BASE_DIR, "saved_models")
     
     CORS_ORIGINS: str = "*"
+    GOOGLE_CLIENT_ID: str | None = None
 
     model_config = SettingsConfigDict(extra="ignore")
 

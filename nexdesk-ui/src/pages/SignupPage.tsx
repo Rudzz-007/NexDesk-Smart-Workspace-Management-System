@@ -2,10 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   UserPlus, Mail, Lock, Eye, EyeOff, AlertCircle, Building2,
-  CheckCircle2, ArrowRight, User
+  CheckCircle2, ArrowRight, User, Briefcase, Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/context/AuthContext';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 
 export default function SignupPage() {
   const [searchParams] = useSearchParams();
@@ -20,6 +21,8 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+  const [usageType, setUsageType] = useState('');
 
   /* ── Status & inline errors ── */
   const [loading, setLoading] = useState(false);
@@ -94,12 +97,14 @@ export default function SignupPage() {
     setGeneralError(null);
 
     try {
-      // Build request with query parameters as expected by POST /auth/signup
       const queryParams = new URLSearchParams({
         email: email.trim(),
         password: password,
         role: 'employee',
       });
+      if (name.trim()) queryParams.append('full_name', name.trim());
+      if (companyName.trim()) queryParams.append('company_name', companyName.trim());
+      if (usageType) queryParams.append('usage_type', usageType);
 
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/signup?${queryParams.toString()}`, {
         method: 'POST',
@@ -141,6 +146,51 @@ export default function SignupPage() {
         } else {
           setEmailError(errorMsg);
         }
+      }
+    } catch (err: any) {
+      setGeneralError('Unable to connect to NexDesk authentication server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      setGeneralError('No ID token received from Google.');
+      return;
+    }
+    
+    setLoading(true);
+    setNameError(null);
+    setEmailError(null);
+    setPasswordError(null);
+    setConfirmError(null);
+    setGeneralError(null);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id_token: credentialResponse.credential }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Decode JWT payload partially to get email for context
+        const payloadStr = atob(credentialResponse.credential.split('.')[1]);
+        const payload = JSON.parse(payloadStr);
+        
+        login({
+          email: payload.email || 'Google User',
+          role: data.role || 'employee',
+          access_token: data.access_token,
+        });
+        navigate(data.role === 'admin' ? '/admin' : redirectUrl);
+      } else {
+        setGeneralError(data?.detail || 'Google authentication failed.');
       }
     } catch (err: any) {
       setGeneralError('Unable to connect to NexDesk authentication server. Please try again.');
@@ -344,6 +394,48 @@ export default function SignupPage() {
             )}
           </div>
 
+          {/* Optional Fields Container */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#f1f5f9]">
+            {/* Company/Team Name */}
+            <div>
+              <label htmlFor="signup-company" className="block text-xs font-semibold uppercase tracking-wider text-[#64748b] mb-1.5 flex items-center gap-1">
+                Company/Team <span className="text-[10px] lowercase text-[#94a3b8] font-normal">(Optional)</span>
+              </label>
+              <div className="relative">
+                <Briefcase size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
+                <input
+                  id="signup-company"
+                  type="text"
+                  value={companyName}
+                  onChange={e => setCompanyName(e.target.value)}
+                  placeholder="Acme Corp"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#cbd5e1] text-[#0f172a] text-sm transition-all focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#eff6ff] bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Usage Type */}
+            <div>
+              <label htmlFor="signup-usage" className="block text-xs font-semibold uppercase tracking-wider text-[#64748b] mb-1.5 flex items-center gap-1">
+                Usage intent <span className="text-[10px] lowercase text-[#94a3b8] font-normal">(Optional)</span>
+              </label>
+              <div className="relative">
+                <Users size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
+                <select
+                  id="signup-usage"
+                  value={usageType}
+                  onChange={e => setUsageType(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#cbd5e1] text-[#0f172a] text-sm transition-all focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#eff6ff] bg-white appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Select usage...</option>
+                  <option value="Just me">Just me</option>
+                  <option value="My team">My team</option>
+                  <option value="My whole company">My whole company</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <Button
             id="signup-submit"
             type="submit"
@@ -364,6 +456,19 @@ export default function SignupPage() {
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-white px-3 text-[#94a3b8] font-semibold tracking-wider">or</span>
           </div>
+        </div>
+
+        <div className="flex justify-center mb-6 w-full">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setGeneralError('Google Login was cancelled or failed.')}
+            useOneTap
+            shape="rectangular"
+            theme="outline"
+            size="large"
+            width="356" // approximately full width
+            text="continue_with"
+          />
         </div>
 
         {/* Link to Login */}

@@ -4,6 +4,8 @@ import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle, Building2, ArrowRight } fr
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/context/AuthContext';
 
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
+
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -21,7 +23,12 @@ export default function LoginPage() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  
+  /* ── Forgot Password state ── */
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotStatus, setForgotStatus] = useState<string | null>(null);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   /* ── Validate before submitting ── */
   const validateForm = () => {
@@ -97,6 +104,70 @@ export default function LoginPage() {
       setGeneralError('Unable to connect to NexDesk authentication server. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      setGeneralError('No ID token received from Google.');
+      return;
+    }
+    
+    setLoading(true);
+    setEmailError(null);
+    setPasswordError(null);
+    setGeneralError(null);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id_token: credentialResponse.credential }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Decode JWT payload partially to get email for context (or let backend return it, but since backend doesn't return email, we'll just set it to 'Google User' or decode it client-side)
+        const payloadStr = atob(credentialResponse.credential.split('.')[1]);
+        const payload = JSON.parse(payloadStr);
+        
+        login({
+          email: payload.email || 'Google User',
+          role: data.role || 'employee',
+          access_token: data.access_token,
+        });
+        navigate(data.role === 'admin' ? '/admin' : redirectUrl);
+      } else {
+        setGeneralError(data?.detail || 'Google authentication failed.');
+      }
+    } catch (err: any) {
+      setGeneralError('Unable to connect to NexDesk authentication server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotEmail.trim()) return;
+    setForgotLoading(true);
+    setForgotStatus(null);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: forgotEmail.trim() }),
+      });
+      const data = await res.json();
+      setForgotStatus(data.message || 'If an account exists with this email, a reset link has been sent.');
+    } catch (err) {
+      setForgotStatus('An error occurred. Please try again.');
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -236,6 +307,19 @@ export default function LoginPage() {
           </div>
         </div>
 
+        <div className="flex justify-center mb-6 w-full">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setGeneralError('Google Login was cancelled or failed.')}
+            useOneTap
+            shape="rectangular"
+            theme="outline"
+            size="large"
+            width="356" // approximately full width
+            text="continue_with"
+          />
+        </div>
+
         {/* Link to Signup */}
         <div className="text-center text-sm text-[#64748b]">
           Don't have a NexDesk account?{' '}
@@ -253,29 +337,58 @@ export default function LoginPage() {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#e2e8f0]">
             <h3 className="text-lg font-bold text-[#0f172a] mb-2">Reset your password</h3>
-            <p className="text-sm text-[#64748b] mb-5">
-              Enter your corporate email address to receive a password reset link.
-            </p>
-            <input
-              type="email"
-              placeholder="you@company.com"
-              className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-sm mb-4 focus:outline-none focus:border-[#3b82f6]"
-            />
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                fullWidth
-                onClick={() => setForgotModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                fullWidth
-                onClick={() => setForgotModalOpen(false)}
-              >
-                Send Reset Link
-              </Button>
-            </div>
+            {forgotStatus ? (
+              <div className="mb-4">
+                <p className="text-sm text-[#059669] font-medium p-3 bg-[#ecfdf5] rounded-xl border border-[#a7f3d0]">
+                  {forgotStatus}
+                </p>
+                <div className="mt-4">
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      setForgotModalOpen(false);
+                      setForgotStatus(null);
+                      setForgotEmail('');
+                    }}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-[#64748b] mb-5">
+                  Enter your corporate email address to receive a password reset link.
+                </p>
+                <input
+                  type="email"
+                  value={forgotEmail}
+                  onChange={e => setForgotEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-sm mb-4 focus:outline-none focus:border-[#3b82f6]"
+                />
+                <div className="flex gap-3">
+                  <Button
+                    variant="secondary"
+                    fullWidth
+                    disabled={forgotLoading}
+                    onClick={() => {
+                      setForgotModalOpen(false);
+                      setForgotEmail('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    fullWidth
+                    loading={forgotLoading}
+                    onClick={handleForgotPassword}
+                  >
+                    Send Reset Link
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

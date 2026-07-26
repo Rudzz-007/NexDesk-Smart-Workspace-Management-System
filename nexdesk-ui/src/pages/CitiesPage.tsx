@@ -193,7 +193,7 @@ export default function CitiesPage() {
                 <Link
                   key={city.name}
                   to={`/browse?city=${encodeURIComponent(city.name)}`}
-                  className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden shadow-xs hover:shadow-lg hover:border-[#3b82f6] transition-all duration-200 flex flex-col group cursor-pointer"
+                  className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#3b82f6] transition-all duration-200 flex flex-col group cursor-pointer hover-lift"
                 >
                   {/* Card Header / Image */}
                   <div className="relative h-48 w-full overflow-hidden bg-slate-100">
@@ -219,13 +219,15 @@ export default function CitiesPage() {
 
                     <div className="absolute bottom-3.5 left-3.5 right-3.5 z-10 text-white">
                       <h3 className="text-xl font-black tracking-tight flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                          <CityLandmarkIcon city={city.name} className="w-5 h-5 text-white/90 shrink-0" />
+                        <span className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                            <CityLandmarkIcon city={city.name} className="w-4 h-4 text-[#3b82f6]" />
+                          </div>
                           {city.name}
                         </span>
                         <ArrowRight size={18} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#3b82f6] bg-white rounded-full p-0.5" />
                       </h3>
-                      <p className="text-xs text-slate-200 font-medium mt-0.5 truncate">
+                      <p className="text-xs text-slate-200 font-medium mt-1 truncate">
                         {city.region}
                       </p>
                     </div>

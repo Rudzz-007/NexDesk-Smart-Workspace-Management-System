@@ -61,7 +61,7 @@ export function Button({
       disabled={isDisabled}
       className={[
         'inline-flex items-center justify-center font-medium rounded-xl',
-        'transition-all duration-150 cursor-pointer select-none',
+        'transition-all duration-150 cursor-pointer select-none hover-lift',
         'focus:outline-none',
         variantClasses[variant],
         sizeClasses[size],

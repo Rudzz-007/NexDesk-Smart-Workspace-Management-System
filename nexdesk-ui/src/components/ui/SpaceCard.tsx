@@ -43,13 +43,39 @@ export function SpaceCard({
   className = '',
 }: SpaceCardProps) {
   const isAvailable = desk.is_active === 'available';
+  const cardRef = React.useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    // Respect prefers-reduced-motion
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          if (cardRef.current) observer.unobserve(cardRef.current);
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <article
+      ref={cardRef}
+      onClick={() => onBook?.(desk)}
       className={[
         'group bg-white rounded-xl border border-[#e2e8f0] shadow-sm',
-        'hover:shadow-md hover:border-[#cbd5e1] transition-all duration-200',
-        'overflow-hidden flex flex-col',
+        'overflow-hidden flex flex-col cursor-pointer hover-lift',
+        isVisible ? 'animate-fade-in-up' : 'opacity-0',
         className,
       ].join(' ')}
       aria-label={`Desk ${desk.desk_id} at ${desk.location}`}
@@ -120,11 +146,14 @@ export function SpaceCard({
             <span className="text-xs text-[#94a3b8] ml-1">/ session</span>
           </div>
           <button
-            onClick={() => onBook?.(desk)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onBook?.(desk);
+            }}
             disabled={!isAvailable}
             id={`book-desk-${desk.desk_id}`}
             className={[
-              'px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150',
+              'px-4 py-2 rounded-xl text-sm font-medium hover-lift',
               isAvailable
                 ? 'bg-[#3b82f6] text-white hover:bg-[#2563eb] active:bg-[#1d4ed8] cursor-pointer'
                 : 'bg-[#f1f5f9] text-[#94a3b8] cursor-not-allowed',

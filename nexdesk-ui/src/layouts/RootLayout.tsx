@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { NavBar } from '@/components/ui/NavBar';
 import { Footer } from '@/components/ui/Footer';
 import { useAuth } from '@/context/AuthContext';
@@ -12,6 +12,7 @@ import ChatAssistant from '@/components/ui/ChatAssistant';
 export function RootLayout() {
   const { user, isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -27,7 +28,7 @@ export function RootLayout() {
       />
 
       {/* Page content fills available space, pushing Footer to bottom */}
-      <main className="flex-1">
+      <main key={location.pathname} className="flex-1 page-transition">
         <Outlet />
       </main>
 
