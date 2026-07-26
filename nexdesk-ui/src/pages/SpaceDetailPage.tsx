@@ -137,6 +137,8 @@ export default function SpaceDetailPage() {
 
   /* ── Fetch desks & resolve current desk ── */
   useEffect(() => {
+    window.scrollTo(0, 0);
+    
     let mounted = true;
     setLoadingDesk(true);
 
@@ -151,6 +153,7 @@ export default function SpaceDetailPage() {
         if (res.ok) {
           const data = await res.json();
           list = Array.isArray(data) ? data : (data.desks ?? []);
+          if (list.length === 0) list = FALLBACK_DESKS;
         } else {
           list = FALLBACK_DESKS;
         }
