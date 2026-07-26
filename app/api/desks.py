@@ -14,7 +14,6 @@ router = APIRouter(prefix="/desks", tags=["Desks"])
 @router.get("/", response_model=DeskListResponse)
 async def list_desks(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ):
     """Returns all workspace desks with location, base pricing, and amenity metadata."""
     result = await db.execute(select(Desk).order_by(Desk.desk_id))
