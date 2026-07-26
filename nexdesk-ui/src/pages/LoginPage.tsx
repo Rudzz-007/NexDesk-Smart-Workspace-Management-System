@@ -63,7 +63,7 @@ export default function LoginPage() {
       formData.append('username', email.trim());
       formData.append('password', password);
 
-      const res = await fetch('http://127.0.0.1:8000/auth/login', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

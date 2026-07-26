@@ -101,7 +101,7 @@ export default function SignupPage() {
         role: 'employee',
       });
 
-      const res = await fetch(`http://127.0.0.1:8000/auth/signup?${queryParams.toString()}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/signup?${queryParams.toString()}`, {
         method: 'POST',
       });
 
@@ -113,7 +113,7 @@ export default function SignupPage() {
         loginData.append('username', email.trim());
         loginData.append('password', password);
 
-        const loginRes = await fetch('http://127.0.0.1:8000/auth/login', {
+        const loginRes = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: loginData.toString(),

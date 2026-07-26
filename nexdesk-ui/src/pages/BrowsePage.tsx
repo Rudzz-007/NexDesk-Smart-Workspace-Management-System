@@ -68,7 +68,7 @@ export default function BrowsePage() {
         headers['Authorization'] = `Bearer ${user.access_token}`;
       }
 
-      const res = await fetch('http://127.0.0.1:8000/desks/', { headers });
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/desks/`, { headers });
       if (res.ok) {
         // API returns { total: number, desks: DeskData[] }
         const data = await res.json();

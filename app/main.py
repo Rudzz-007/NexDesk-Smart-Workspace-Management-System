@@ -48,9 +48,10 @@ app = FastAPI(
 
 
 # CROSS-ORIGIN RESOURCE SHARING (CORS) MIDDLEWARE
+cors_origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",")] if settings.CORS_ORIGINS else ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Open for development; restrict to trusted domain origins in production
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],  # Permits all standard verbs: GET, POST, PUT, DELETE, OPTIONS
     allow_headers=["*"],

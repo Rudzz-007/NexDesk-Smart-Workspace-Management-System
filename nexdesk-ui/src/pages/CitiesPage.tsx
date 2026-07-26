@@ -116,7 +116,7 @@ export default function CitiesPage() {
       headers['Authorization'] = `Bearer ${user.access_token}`;
     }
 
-    fetch('http://127.0.0.1:8000/desks/', { headers })
+    fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/desks/`, { headers })
       .then(async r => {
         if (r.ok) {
           const data = await r.json();

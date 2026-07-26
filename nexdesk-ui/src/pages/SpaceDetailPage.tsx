@@ -146,7 +146,7 @@ export default function SpaceDetailPage() {
         if (user?.access_token) {
           headers['Authorization'] = `Bearer ${user.access_token}`;
         }
-        const res = await fetch('http://127.0.0.1:8000/desks/', { headers });
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/desks/`, { headers });
         let list: DeskData[] = [];
         if (res.ok) {
           const data = await res.json();
@@ -212,7 +212,7 @@ export default function SpaceDetailPage() {
         end_time: endIso
       };
 
-      const res = await fetch('http://127.0.0.1:8000/bookings/', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/bookings/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ export default function SpaceDetailPage() {
     setVerifyMessage(null);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/checkin/initialize/${bookedRecord.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/checkin/initialize/${bookedRecord.id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.access_token}`
@@ -275,7 +275,7 @@ export default function SpaceDetailPage() {
     setVerifyMessage(null);
 
     try {
-      const url = `http://127.0.0.1:8000/checkin/verify?token_string=${encodeURIComponent(checkinToken)}`;
+      const url = `${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/checkin/verify?token_string=${encodeURIComponent(checkinToken)}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: {

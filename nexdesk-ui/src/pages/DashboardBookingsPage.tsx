@@ -19,7 +19,7 @@ export default function DashboardBookingsPage() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/bookings/me', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/bookings/me`, {
         headers: user?.access_token ? { Authorization: `Bearer ${user.access_token}` } : {},
       });
       if (res.ok) {
@@ -44,7 +44,7 @@ export default function DashboardBookingsPage() {
     setCancellingId(bookingId);
     setActionMessage(null);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/bookings/${bookingId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/bookings/${bookingId}`, {
         method: 'DELETE',
         headers: user?.access_token ? { Authorization: `Bearer ${user.access_token}` } : {},
       });

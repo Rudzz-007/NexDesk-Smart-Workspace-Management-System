@@ -76,7 +76,7 @@ export default function AdminPage() {
   const fetchAnalytics = async () => {
     setAnalyticsLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/analytics/summary', { headers: authHeaders });
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/analytics/summary`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setAnalytics(data);
@@ -91,7 +91,7 @@ export default function AdminPage() {
   const fetchDesks = async () => {
     setDesksLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/desks/', { headers: authHeaders });
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/desks/`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         // Remember { total, desks } wrapper
@@ -111,7 +111,7 @@ export default function AdminPage() {
   const fetchBookings = async () => {
     setBookingsLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/bookings/me', { headers: authHeaders });
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/bookings/me`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setBookings(Array.isArray(data) ? data : []);
@@ -127,7 +127,7 @@ export default function AdminPage() {
     setUsersLoading(true);
     setUserRoleError(null);
     try {
-      const res = await fetch('http://127.0.0.1:8000/admin/users', { headers: authHeaders });
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/admin/users`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setUsersList(Array.isArray(data) ? data : []);
@@ -157,7 +157,7 @@ export default function AdminPage() {
         zone_identifier: overrideZone,
         surge_multiplier: overrideMultiplier.toString(),
       });
-      const res = await fetch(`http://127.0.0.1:8000/analytics/pricing-override?${params.toString()}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/analytics/pricing-override?${params.toString()}`, {
         method: 'POST',
         headers: authHeaders,
       });
@@ -192,7 +192,7 @@ export default function AdminPage() {
 
     try {
       const params = new URLSearchParams({ new_role: newRole });
-      const res = await fetch(`http://127.0.0.1:8000/admin/users/${targetUserId}/role?${params.toString()}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/admin/users/${targetUserId}/role?${params.toString()}`, {
         method: 'PUT',
         headers: authHeaders,
       });

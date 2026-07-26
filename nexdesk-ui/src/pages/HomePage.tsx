@@ -66,7 +66,7 @@ export default function HomePage() {
 
   /* fetch featured desks */
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/desks/?limit=6')
+    fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/desks/?limit=6`)
       .then(r => r.json())
       .then(data => {
         const list: DeskData[] = Array.isArray(data) ? data : (data.desks ?? []);
