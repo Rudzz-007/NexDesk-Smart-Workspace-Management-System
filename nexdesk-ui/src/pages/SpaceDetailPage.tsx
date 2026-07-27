@@ -154,9 +154,6 @@ export default function SpaceDetailPage() {
         if (res.ok) {
           const data = await res.json();
           list = Array.isArray(data) ? data : (data.desks ?? []);
-          if (list.length === 0) list = FALLBACK_DESKS;
-        } else {
-          list = FALLBACK_DESKS;
         }
         if (!mounted) return;
         setAllDesks(list);
@@ -171,11 +168,7 @@ export default function SpaceDetailPage() {
         }
       } catch {
         if (!mounted) return;
-        setAllDesks(FALLBACK_DESKS);
-        const match = FALLBACK_DESKS.find(
-          d => String(d.id) === id || d.desk_id.toLowerCase() === id?.toLowerCase()
-        );
-        setDesk(match || FALLBACK_DESKS[0]);
+        setAllDesks([]);
       } finally {
         if (mounted) setLoadingDesk(false);
       }

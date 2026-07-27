@@ -73,17 +73,15 @@ export default function BrowsePage() {
         // API returns { total: number, desks: DeskData[] }
         const data = await res.json();
         const deskList: DeskData[] = Array.isArray(data) ? data : (data.desks ?? []);
+        
         setRawDesks(deskList);
       } else if (res.status === 401) {
-        // If unauthenticated, gracefully load fallback desks so users can browse publicly
-        setRawDesks(FALLBACK_DESKS);
+        setRawDesks([]);
       } else {
         throw new Error(`Server responded with status ${res.status}`);
       }
     } catch (err: any) {
-      // If server is unreachable or throws, allow user to view fallback desks or retry
       setError(err?.message || 'Failed to fetch desks from backend');
-      setRawDesks(FALLBACK_DESKS);
     } finally {
       setLoading(false);
     }

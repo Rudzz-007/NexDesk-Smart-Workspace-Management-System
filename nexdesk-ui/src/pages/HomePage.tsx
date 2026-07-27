@@ -275,25 +275,10 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            /* empty / API offline fallback */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in">
-              {[
-                { id:1, desk_id:'DESK-BLR-01', location:'Koramangala, Bangalore', base_price:149, amenities:'WiFi,Monitor,Coffee', is_active:'available' as const },
-                { id:2, desk_id:'DESK-MUM-03', location:'BKC, Mumbai',            base_price:199, amenities:'WiFi,Standing Desk,Locker', is_active:'available' as const },
-                { id:3, desk_id:'DESK-DEL-07', location:'Connaught Place, Delhi', base_price:129, amenities:'WiFi,Printer,Coffee',  is_active:'available' as const },
-                { id:4, desk_id:'DESK-HYD-02', location:'HITEC City, Hyderabad',  base_price:119, amenities:'WiFi,Monitor,AC',     is_active:'available' as const },
-                { id:5, desk_id:'DESK-PUN-05', location:'Hinjewadi, Pune',        base_price:99,  amenities:'WiFi,Coffee,Lounge',  is_active:'available' as const },
-                { id:6, desk_id:'DESK-CHE-04', location:'OMR, Chennai',           base_price:109, amenities:'WiFi,Monitor,Power',  is_active:'available' as const },
-              ].map((desk, i) => (
-                <SpaceCard
-                  key={desk.id}
-                  desk={desk}
-                  image={DESK_IMAGES[i % DESK_IMAGES.length]}
-                  rating={+(4.2 + (i % 4) * 0.2).toFixed(1)}
-                  reviewCount={18 + i * 7}
-                  onBook={() => navigate(`/browse`)}
-                />
-              ))}
+            <div className="py-12 text-center bg-white rounded-2xl border border-[#e2e8f0] shadow-sm">
+              <Building2 size={32} className="mx-auto text-[#94a3b8] mb-3" />
+              <h3 className="text-lg font-bold text-[#0f172a] mb-2">No desks found</h3>
+              <p className="text-sm text-[#64748b]">Check back later for new workspace additions.</p>
             </div>
           )}
         </div>
